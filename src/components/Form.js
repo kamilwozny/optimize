@@ -1,61 +1,109 @@
 import Card from './Card';
-import LinkButton from './LinkButton';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import line from '../images/line1.svg';
 const Form = () => {
-  const [check, setCheck] = useState(false);
-  const [name, setName] = useState('');
+  const [isLogin, setIsLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
-  const isValidEmail = (email) => {
-    return /\S+@\S+\.\S+/.test(email);
+  const [password, setPassword] = useState('');
+
+  const switchAuthModeHandler = () => {
+    setIsLogin((prevState) => !prevState);
   };
-  useEffect(() => {
-    if (name.length > 3 && isValidEmail(email)) {
-      setCheck(true);
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    if (isLogin) {
     } else {
-      setCheck(false);
+      fetch(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCA87diG9xKD-1ZDuUDtDbpvSxwP9XVfqw',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            returnSecureToken: true,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((res) => {
+        setIsLoading(false);
+        if (res.ok) {
+        } else {
+          return res.json().then((data) => {
+            let errorMessage = 'Auth fail';
+            if (data && data.error && data.error.message) {
+              errorMessage = data.error.message;
+            }
+            //handle custom error messages
+          });
+        }
+      });
     }
-  }, [name, email]);
+  };
 
   return (
     <>
       <Card>
-        <h2 className='text-cream text-5xl font-medium text-center pb-10'>
-          Join the adventure
-        </h2>
-        <form className='flex flex-wrap justify-center'>
-          <div className=''>
-            <label className='text-cream text-4xl pl-10 pr-10 font-normal '>
-              Name
-            </label>
-            <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              type='text'
-              className='w-80 ml-10 mr-2'
+        <div>
+          <h2 className='text-cream text-5xl font-medium text-center pb-2'>
+            {!isLogin ? 'Join the adventure' : 'Login'}
+          </h2>
+          {!isLogin ? (
+            <img
+              src={line}
+              alt='underline header'
+              className='absolute top-14 left-64 scale-75'
             />
-          </div>
-          <div>
-            <label className='text-cream text-4xl font-normal pt-10 pl-10 pr-10 pb-4'>
-              Email
-            </label>
-            <input
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              type='email'
-              className='w-80 mt-10 ml-10 mr-2 mb-4'
+          ) : (
+            <img
+              src={line}
+              alt='underline header'
+              className='absolute top-14 right-40 scale-50'
             />
-          </div>
-          <p className='w-full text-center text-white font-semibold text-lg'>
-            0/2
-          </p>
-          <div className='w-full'>
-            <div className='w-60 rounded-3xl bg-cream h-2 m-auto'></div>
-          </div>
-          {check && (
-            <LinkButton to='loginsecond' color='red'>
-              Next
-            </LinkButton>
           )}
+        </div>
+        <form
+          className='flex flex-wrap justify-center'
+          onSubmit={submitHandler}
+        >
+          <div className='flex flex-col flex-wrap gap-3'>
+            <label className='text-cream text-4xl font-normal '>Email</label>
+            <input
+              type='email'
+              className='w-80'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label className='text-cream text-4xl font-normal'>Password</label>
+            <input
+              type='password'
+              className='w-80'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className='flex justify-center flex-wrap flex-col'>
+            {!isLoading && (
+              <button
+                type='submit'
+                className='w-96 bg-red text-center rounded-3xl pt-2 pb-2 pl-4 pr-4 m-8 text-xl font-extrabold text-white h-12'
+              >
+                {!isLogin ? 'Create account' : 'Login'}
+              </button>
+            )}
+            {isLoading && <p>Sending data to the server</p>}
+            <button
+              type='button'
+              className='w-full text-center rounded-3xl text-xl font-extrabold text-white self-center'
+              onClick={switchAuthModeHandler}
+            >
+              {isLogin ? 'Create new account' : 'Login with existing account'}
+            </button>
+          </div>
         </form>
       </Card>
     </>
