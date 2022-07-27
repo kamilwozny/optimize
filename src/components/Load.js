@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { useContext } from 'react';
+import AuthContext from '../store/auth-context';
 const Load = () => {
+  const authCtx = useContext(AuthContext);
+  const isLoggedIn = authCtx.isLoggedIn;
   const [present, setPresent] = useState(true);
   useEffect(() => {
-    setTimeout(() => {
-      setPresent(false);
-    }, 400);
+    setPresent(false);
   }, []);
   return (
     <AnimatePresence>
-      {present && (
+      {present && !isLoggedIn && (
         <div className='overflow-hidden w-full h-full absolute'>
           <motion.div
             key='bg'
-            className={`w-[3000px] h-[3000px] rounded-[1500px] absolute top-1/2 left-1/2 bg-red z-20`}
+            className={`w-[3000px] h-[3000px] rounded-[1500px] absolute top-1/2 left-1/2 bg-red z-40`}
             initial={{ scale: 1, translateX: '-50%', translateY: '-50%' }}
             animate={{ scale: 0, translateX: '-50%', translateY: '-50%' }}
             transition={{ duration: 0.6, delay: 2.4 }}
@@ -22,7 +23,7 @@ const Load = () => {
           >
             <motion.div
               key='mid'
-              className={`w-[300px] h-[300px] absolute top-1/2 left-1/2  bg-cream z-30`}
+              className={`w-[300px] h-[300px] absolute top-1/2 left-1/2  bg-cream z-50`}
               initial={{ scale: 1, translateX: '-50%', translateY: '-50%' }}
               animate={{
                 scale: [1, 2, 2, 1, 1],

@@ -1,8 +1,12 @@
-import Card from './Card';
-import { useState } from 'react';
-import line from '../images/line1.svg';
+import Card from '../Card';
+import { useState, useContext } from 'react';
+import line from '../../images/line1.svg';
+import AuthContext from '../../store/auth-context';
+import { useNavigate } from 'react-router-dom';
 const Form = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const authCtx = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,35 +18,49 @@ const Form = () => {
   const submitHandler = (event) => {
     event.preventDefault();
     setIsLoading(true);
+    let url;
     if (isLogin) {
+      url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCA87diG9xKD-1ZDuUDtDbpvSxwP9XVfqw';
     } else {
-      fetch(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCA87diG9xKD-1ZDuUDtDbpvSxwP9XVfqw',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            email: email,
-            password: password,
-            returnSecureToken: true,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      ).then((res) => {
+      url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCA87diG9xKD-1ZDuUDtDbpvSxwP9XVfqw';
+    }
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        password: password,
+        returnSecureToken: true,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
         setIsLoading(false);
         if (res.ok) {
+          return res.json();
         } else {
           return res.json().then((data) => {
             let errorMessage = 'Auth fail';
-            if (data && data.error && data.error.message) {
-              errorMessage = data.error.message;
-            }
-            //handle custom error messages
+            // if (data && data.error && data.error.message) {
+            //   errorMessage = data.error.message;
+            // }
+            throw new Error(errorMessage);
           });
         }
+      })
+      .then((data) => {
+        const expirationTime = new Date(
+          new Date().getTime() + +data.expiresIn * 1000
+        );
+        authCtx.login(data.idToken, expirationTime.toISOString());
+        navigate('/');
+      })
+      .catch((err) => {
+        alert(err.message);
       });
-    }
   };
 
   return (
@@ -86,22 +104,26 @@ const Form = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className='flex justify-center flex-wrap flex-col'>
+          <div className='flex justify-center flex-wrap flex-col w-full'>
             {!isLoading && (
               <button
                 type='submit'
-                className='w-96 bg-red text-center rounded-3xl pt-2 pb-2 pl-4 pr-4 m-8 text-xl font-extrabold text-white h-12'
+                className='self-center w-96 bg-red text-center rounded-3xl pt-2 pb-2 pl-4 pr-4 m-8 mb-4 text-xl font-extrabold text-white h-12'
               >
-                {!isLogin ? 'Create account' : 'Login'}
+                {isLogin ? 'Login' : 'Create account'}
               </button>
             )}
-            {isLoading && <p>Sending data to the server</p>}
+            {isLoading && (
+              <p className='w-full text-center text-white'>
+                Sending data to the server
+              </p>
+            )}
             <button
               type='button'
               className='w-full text-center rounded-3xl text-xl font-extrabold text-white self-center'
               onClick={switchAuthModeHandler}
             >
-              {isLogin ? 'Create new account' : 'Login with existing account'}
+              {!isLogin ? 'Login with existing account' : 'Create new account'}
             </button>
           </div>
         </form>
