@@ -1,5 +1,9 @@
+# Optimize
 
-Learning react on habit tracker page.
+Optimize is a project created for the purpose to learn React. It's a website to track habits with user authentication.
+Demo of the project will be live soon..
 
-Soon more..
+## Status
+
+Still in development
 

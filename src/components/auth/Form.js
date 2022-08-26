@@ -1,8 +1,8 @@
-import Card from '../Card';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import line from '../../images/line1.svg';
 import AuthContext from '../../store/auth-context';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Input from '../Input';
 const Form = () => {
   const authCtx = useContext(AuthContext);
   const navigate = useNavigate();
@@ -10,6 +10,15 @@ const Form = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state === null) {
+      return;
+    }
+    if (location.state.logInfo === false) {
+      setIsLogin(false);
+    }
+  }, [location]);
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -55,7 +64,7 @@ const Form = () => {
         const expirationTime = new Date(
           new Date().getTime() + +data.expiresIn * 1000
         );
-        authCtx.login(data.idToken, expirationTime.toISOString());
+        authCtx.login(data.idToken, expirationTime.toISOString(), data.localId);
         navigate('/');
       })
       .catch((err) => {
@@ -65,7 +74,9 @@ const Form = () => {
 
   return (
     <>
-      <Card>
+      <div
+        className={`bg-navyblue mt-72 rounded-3xl p-4 m-auto w-[600px] h-[400px]`}
+      >
         <div>
           <h2 className='text-cream text-5xl font-medium text-center pb-2'>
             {!isLogin ? 'Join the adventure' : 'Login'}
@@ -89,18 +100,19 @@ const Form = () => {
           onSubmit={submitHandler}
         >
           <div className='flex flex-col flex-wrap gap-3'>
-            <label className='text-cream text-4xl font-normal '>Email</label>
-            <input
-              type='email'
-              className='w-80'
-              value={email}
+            <Input
+              placeholder='Enter email'
+              label='Email'
+              required
+              id='emailLogin'
               onChange={(e) => setEmail(e.target.value)}
             />
-            <label className='text-cream text-4xl font-normal'>Password</label>
-            <input
+            <Input
+              placeholder='Enter password'
+              label='Password'
+              required
               type='password'
-              className='w-80'
-              value={password}
+              id='pwdLogin'
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -127,7 +139,7 @@ const Form = () => {
             </button>
           </div>
         </form>
-      </Card>
+      </div>
     </>
   );
 };

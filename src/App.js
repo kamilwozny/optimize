@@ -6,23 +6,36 @@ import MainPage from './pages/MainPage';
 import { useContext } from 'react';
 import AuthContext from './store/auth-context';
 import Dashboard from './pages/Dashboard';
+import { AnimatePresence } from 'framer-motion';
+
 function App() {
   const authCtx = useContext(AuthContext);
   return (
     <>
-      <Routes>
-        <Route
-          path='/'
-          element={!authCtx.isLoggedIn ? <MainPage /> : <Dashboard />}
-        />
-        <Route
-          path='/login'
-          element={!authCtx.isLoggedIn ? <Login /> : <Navigate to='/profile' />}
-        ></Route>
-        {authCtx.isLoggedIn && <Route path='/habits' element={<Habits />} />}
-        {authCtx.isLoggedIn && <Route path='/profile' element={<Profile />} />}
-        <Route path='*' element={<Navigate to='/' />} />
-      </Routes>
+      <AnimatePresence>
+        <Routes>
+          <Route
+            path='/'
+            element={
+              !authCtx.isLoggedIn ? <MainPage /> : <Navigate to='/dashboard' />
+            }
+          />
+          <Route
+            path='/login'
+            element={
+              !authCtx.isLoggedIn ? <Login /> : <Navigate to='/profile' />
+            }
+          ></Route>
+          {authCtx.isLoggedIn && <Route path='/habits' element={<Habits />} />}
+          {authCtx.isLoggedIn && (
+            <Route path='/profile' element={<Profile />} />
+          )}
+          {authCtx.isLoggedIn && (
+            <Route path='/dashboard' element={<Dashboard />} />
+          )}
+          <Route path='*' element={<Navigate to='/' />} />
+        </Routes>
+      </AnimatePresence>
     </>
   );
 }

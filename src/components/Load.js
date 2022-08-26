@@ -12,10 +12,10 @@ const Load = () => {
   return (
     <AnimatePresence>
       {present && !isLoggedIn && (
-        <div className='overflow-hidden w-full h-full absolute'>
+        <div className='overflow-hidden w-full h-full absolute min-h-[760px]'>
           <motion.div
             key='bg'
-            className={`w-[3000px] h-[3000px] rounded-[1500px] absolute top-1/2 left-1/2 bg-red z-40`}
+            className={`w-[3000px] h-[3000px] rounded-[1500px] absolute top-1/2 left-1/2 bg-red z-50`}
             initial={{ scale: 1, translateX: '-50%', translateY: '-50%' }}
             animate={{ scale: 0, translateX: '-50%', translateY: '-50%' }}
             transition={{ duration: 0.6, delay: 2.4 }}
@@ -23,7 +23,7 @@ const Load = () => {
           >
             <motion.div
               key='mid'
-              className={`w-[300px] h-[300px] absolute top-1/2 left-1/2  bg-cream z-50`}
+              className={`w-[120px] h-[120px] sm:w-[300px] sm:h-[300px] absolute top-1/2 left-1/2  bg-cream z-50`}
               initial={{ scale: 1, translateX: '-50%', translateY: '-50%' }}
               animate={{
                 scale: [1, 2, 2, 1, 1],

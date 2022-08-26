@@ -3,6 +3,14 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      content: {
+        list: 'url("/src/images/list.svg")',
+        logout: 'url("/src/images/logout.svg")',
+        profile: 'url("/src/images/profile.svg")',
+        dashboard: 'url("/src/images/dashboard.svg")',
+        login: 'url("/src/images/login.svg")',
+        habitYes: 'url("/src/images/yes.svg")',
+      },
       height: {
         main: '90vh',
         header: '10vh',
@@ -23,6 +31,8 @@ module.exports = {
         half: '50%',
       },
       screens: {
+        custom: { raw: '(max-height: 720px)' },
+        mini: '440px',
         '2xl': '1600px',
         tall: '1800px',
       },
