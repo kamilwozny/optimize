@@ -7,3 +7,10 @@ Demo of the project will be live soon..
 
 Still in development
 
+## Tools and libraries used
+
+React.js 
+Tailwind (styling)
+Firebase (database)
+React-router (routing)
+Framer-motion (animations)
